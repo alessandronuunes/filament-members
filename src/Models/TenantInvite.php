@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Models;
 
+use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
 
 class TenantInvite extends Model
 {
@@ -16,7 +16,7 @@ class TenantInvite extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'tenant_id',
@@ -40,8 +40,8 @@ class TenantInvite extends Model
             'tenant_id' => 'integer',
             'user_id' => 'integer',
             'role' => ConfigHelper::getTenantRoleEnum(),
-            'expires_at' => 'timestamp',
-            'accepted_at' => 'timestamp',
+            'expires_at' => 'datetime',
+            'accepted_at' => 'datetime',
         ];
     }
 

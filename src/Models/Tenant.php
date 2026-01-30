@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tenant extends Model
 {
@@ -18,7 +18,7 @@ class Tenant extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
@@ -56,7 +56,6 @@ class Tenant extends Model
             ->withPivot($roleColumn)
             ->withTimestamps();
     }
-
 
     public function tenantInvites(): HasMany
     {
