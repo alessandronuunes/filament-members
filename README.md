@@ -236,22 +236,6 @@ $tenantModel = ConfigHelper::getTenantModel();
 $defaultRole = ConfigHelper::getInviteConfig('default_role');
 ```
 
-## Permissions
-
-Configure role-based permissions in `config/filament-member.php`:
-
-```php
-'permissions' => [
-    'roles' => [
-        'can_invite_members' => ['owner', 'admin'],
-        'can_remove_members' => ['owner', 'admin'],
-        'can_change_roles' => ['owner'],
-    ],
-    'owner_cannot_be_removed' => true,
-    'owner_cannot_change_role' => true,
-],
-```
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
