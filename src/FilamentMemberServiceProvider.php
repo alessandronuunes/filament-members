@@ -7,7 +7,10 @@ namespace AlessandroNuunes\FilamentMember;
 use AlessandroNuunes\FilamentMember\Console\Commands\InstallCommand;
 use AlessandroNuunes\FilamentMember\Events\TenantInviteCreated;
 use AlessandroNuunes\FilamentMember\Listeners\SendTenantInviteNotification;
+use AlessandroNuunes\FilamentMember\Livewire\ListInvitations;
+use AlessandroNuunes\FilamentMember\Livewire\ListMembers;
 use Illuminate\Support\Facades\Event;
+use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -34,9 +37,9 @@ class FilamentMemberServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        Event::listen(
-            TenantInviteCreated::class,
-            SendTenantInviteNotification::class
-        );
+        Event::listen(TenantInviteCreated::class, SendTenantInviteNotification::class);
+
+        Livewire::component('tenant.list-members', ListMembers::class);
+        Livewire::component('tenant.list-invitations', ListInvitations::class);
     }
 }
