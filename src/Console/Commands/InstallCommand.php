@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Alessandronuunes\FilamentMember\Console\Commands;
+namespace AlessandroNuunes\FilamentMember\Console\Commands;
 
 use Illuminate\Console\Command;
 
@@ -14,22 +14,20 @@ class InstallCommand extends Command
 
     public function handle(): int
     {
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-member-config',
-            '--force' => true,
-        ]);
+        $tags = [
+            'filament-member-config',
+            'filament-member-migrations',
+            'filament-member-translations',
+        ];
 
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-member-migrations',
-            '--force' => true,
-        ]);
+        foreach ($tags as $tag) {
+            $this->call('vendor:publish', [
+                '--tag' => $tag,
+                '--force' => true,
+            ]);
+        }
 
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-member-translations',
-            '--force' => true,
-        ]);
-
-        $this->info('Filament Member was installed successfully.');
+        $this->components->info('Filament Member was installed successfully.');
 
         return self::SUCCESS;
     }
