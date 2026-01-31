@@ -1,8 +1,12 @@
 # Filament Member
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/alessandronuunes/filament-member.svg?style=flat-square)](https://packagist.org/packages/alessandronuunes/filament-member)
+[![Total Downloads](https://img.shields.io/packagist/dt/alessandronuunes/filament-member.svg?style=flat-square)](https://packagist.org/packages/alessandronuunes/filament-member)
+[![License](https://img.shields.io/packagist/l/alessandronuunes/filament-member.svg?style=flat-square)](https://packagist.org/packages/alessandronuunes/filament-member)
+
 A comprehensive Filament plugin for managing tenant members, invitations, and role-based access control in multi-tenant applications.
 
-![Members Management Interface](screenshots/members.png)
+![Members Management Interface](screenshots/members.jpg)
 
 ## Features
 
