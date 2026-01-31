@@ -156,6 +156,14 @@ Change the invitation acceptance route in `config/filament-member.php`:
 
 ### Theme / Styling
 
+If the theme file does not exist yet (e.g. `resources/css/filament/admin/theme.css`), create it by running:
+
+```bash
+php artisan make:filament-theme admin
+```
+
+You can specify your panel name if different. See the [Filament documentation on creating a custom theme](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) for details.
+
 For the plugin styles to work correctly in your Filament panel, add the `@source` directive to your theme file (e.g. `resources/css/filament/admin/theme.css`):
 
 ```css
