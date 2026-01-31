@@ -70,6 +70,15 @@ class ConfigHelper
     }
 
     /**
+     * Get the tenant foreign key column name (pivot and queries).
+     * Use 'tenant_id' or 'reseller_id' when using Reseller as tenant.
+     */
+    public static function getTenantForeignKeyColumn(): string
+    {
+        return (string) self::get('relationships.tenant_foreign_key', 'tenant_id');
+    }
+
+    /**
      * Get a tenancy configuration.
      */
     public static function getTenancyConfig(string $key, mixed $default = null): mixed

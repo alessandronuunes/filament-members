@@ -60,6 +60,7 @@ class ListMembers extends TableComponent
 
         $userModel = ConfigHelper::getUserModel();
         $pivotTable = ConfigHelper::getTable('tenant_user');
+        $tenantFkColumn = ConfigHelper::getTenantForeignKeyColumn();
         $roleColumn = ConfigHelper::getRelationshipColumn('tenant_user_role_column');
         $rolePriority = ConfigHelper::getSortingConfig('members_role_priority', ['owner', 'admin', 'member']);
 
@@ -67,7 +68,7 @@ class ListMembers extends TableComponent
             ? $userModel::query()
                 ->withoutGlobalScopes()
                 ->join($pivotTable, 'users.id', '=', $pivotTable . '.user_id')
-                ->where($pivotTable . '.tenant_id', $tenant->getKey())
+                ->where($pivotTable . '.' . $tenantFkColumn, $tenant->getKey())
                 ->select('users.*', sprintf('%s.%s as pivot_role', $pivotTable, $roleColumn), $pivotTable . '.created_at as joined_at')
                 ->orderByRaw($this->buildRoleOrderBy($pivotTable, $roleColumn, $rolePriority), $rolePriority)
                 ->orderBy('users.name')

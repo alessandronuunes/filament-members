@@ -59,11 +59,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify the role column name on the tenant_user pivot
-    | table used when attaching members to tenants.
+    | table used when attaching members to tenants. tenant_foreign_key is
+    | the column name for the tenant/reseller FK in the pivot table (e.g.
+    | 'tenant_id' or 'reseller_id' when using Reseller as tenant).
     |
     */
 
     'relationships' => [
+        'tenant_foreign_key' => 'tenant_id',
         'tenant_user_role_column' => 'role',
     ],
 
