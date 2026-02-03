@@ -154,12 +154,4 @@ class ConfigHelper
     {
         return self::get(sprintf('navigation.%s.%s', $pageKey, $key), $default);
     }
-
-    /**
-     * Get a navigation configuration value.
-     */
-    public static function getNavigationConfig(string $pageKey, string $key, mixed $default = null): mixed
-    {
-        return self::get("navigation.{$pageKey}.{$key}", $default);
-    }
 }
