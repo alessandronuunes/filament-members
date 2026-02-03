@@ -37,22 +37,20 @@ class ListMembers extends TableComponent
             return [];
         }
 
-        $options = [];
-        foreach ($enumClass::cases() as $case) {
-            $options[$case->value] = method_exists($case, 'getLabel') ? $case->getLabel() : $case->name;
-        }
-
-        return $options;
+        return collect($enumClass::cases())
+            ->mapWithKeys(fn ($case): array => [
+                $case->value => method_exists($case, 'getLabel') ? $case->getLabel() : $case->name,
+            ])
+            ->all();
     }
 
     protected function buildRoleOrderBy(string $pivotTable, string $roleColumn, array $priority): string
     {
-        $cases = [];
-        foreach (array_keys($priority) as $index) {
-            $cases[] = 'WHEN ? THEN '.($index + 1);
-        }
+        $cases = collect(array_keys($priority))
+            ->map(fn (int $index): string => 'WHEN ? THEN '.($index + 1))
+            ->implode("\n");
 
-        return sprintf('CASE %s.%s%s', $pivotTable, $roleColumn, PHP_EOL).implode("\n", $cases)."\nELSE ".(count($priority) + 1)."\nEND";
+        return "CASE {$pivotTable}.{$roleColumn}\n{$cases}\nELSE ".(count($priority) + 1)."\nEND";
     }
 
     public function table(Table $table): Table
@@ -62,6 +60,7 @@ class ListMembers extends TableComponent
 
         $userModel = ConfigHelper::getUserModel();
         $pivotTable = ConfigHelper::getTable('tenant_user');
+        $tenantFkColumn = ConfigHelper::getTenantForeignKeyColumn();
         $roleColumn = ConfigHelper::getRelationshipColumn('tenant_user_role_column');
         $rolePriority = ConfigHelper::getSortingConfig('members_role_priority', ['owner', 'admin', 'member']);
 
@@ -69,14 +68,14 @@ class ListMembers extends TableComponent
             ? $userModel::query()
                 ->withoutGlobalScopes()
                 ->join($pivotTable, 'users.id', '=', $pivotTable . '.user_id')
-                ->where($pivotTable . '.tenant_id', $tenant->id)
+                ->where($pivotTable . '.' . $tenantFkColumn, $tenant->getKey())
                 ->select('users.*', sprintf('%s.%s as pivot_role', $pivotTable, $roleColumn), $pivotTable . '.created_at as joined_at')
                 ->orderByRaw($this->buildRoleOrderBy($pivotTable, $roleColumn, $rolePriority), $rolePriority)
                 ->orderBy('users.name')
             : $userModel::query()->whereRaw('1 = 0');
 
         $enumClass = $this->getTenantRoleEnum();
-        $ownerValue = enum_exists($enumClass) && defined($enumClass . '::Owner')
+        $ownerValue = enum_exists($enumClass) && defined($enumClass.'::Owner')
             ? $enumClass::Owner->value
             : 'owner';
 
@@ -108,7 +107,7 @@ class ListMembers extends TableComponent
                             ->label(__('filament-member::default.column.role'))
                             ->badge()
                             ->formatStateUsing(function (?string $state) use ($enumClass) {
-                                if (! $state) {
+                                if (blank($state)) {
                                     return '-';
                                 }
 
@@ -123,11 +122,7 @@ class ListMembers extends TableComponent
                                     : $state;
                             })
                             ->color(function (?string $state) use ($enumClass) {
-                                if (! $state) {
-                                    return 'gray';
-                                }
-
-                                if (! enum_exists($enumClass)) {
+                                if (blank($state) || ! enum_exists($enumClass)) {
                                     return 'gray';
                                 }
 
@@ -153,7 +148,7 @@ class ListMembers extends TableComponent
                     ->label(__('filament-member::default.column.role'))
                     ->options($this->getTenantRoleOptions())
                     ->query(function ($query, array $data) use ($pivotTable, $roleColumn) {
-                        if (! $data['value']) {
+                        if (blank($data['value'] ?? null)) {
                             return $query;
                         }
 
@@ -229,6 +224,6 @@ class ListMembers extends TableComponent
 
     public function render(): View
     {
-        return view('filament-member::livewire.list-members');
+        return view('filament-member::livewire.tenant.list-members');
     }
 }

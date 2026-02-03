@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Pages;
 
-use Override;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -21,8 +18,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use Override;
 
 class AcceptInvite extends SimplePage
 {
@@ -60,6 +58,16 @@ class AcceptInvite extends SimplePage
         return ConfigHelper::getTenantRoleEnum();
     }
 
+    protected function hasValidInvite(): bool
+    {
+        return $this->invite !== null || $this->tenant !== null;
+    }
+
+    protected function isInvalidInvite(): bool
+    {
+        return ! $this->hasValidInvite();
+    }
+
     public function mount(string $token): void
     {
         $this->token = $token;
@@ -83,11 +91,11 @@ class AcceptInvite extends SimplePage
             }
         }
 
-        if (! $this->invite && ! $this->tenant) {
+        if ($this->isInvalidInvite()) {
             return;
         }
 
-        if (Auth::check()) {
+        if (auth()->check()) {
             $this->handleLoggedInUser();
         }
 
@@ -98,7 +106,7 @@ class AcceptInvite extends SimplePage
 
     protected function handleLoggedInUser(): void
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
         if ($this->isGenericInvite) {
             $this->acceptInvite($user);
@@ -107,7 +115,7 @@ class AcceptInvite extends SimplePage
         }
 
         if ($user->email !== $this->invite->email) {
-            Auth::logout();
+            auth()->logout();
             session()->invalidate();
             session()->regenerateToken();
 
@@ -182,7 +190,7 @@ class AcceptInvite extends SimplePage
     #[Override]
     public function getHeading(): string|Htmlable|null
     {
-        if (! $this->invite && ! $this->tenant) {
+        if ($this->isInvalidInvite()) {
             return __('filament-member::default.page.heading.invalid_invite');
         }
 
@@ -192,7 +200,7 @@ class AcceptInvite extends SimplePage
     #[Override]
     public function getSubheading(): string|Htmlable|null
     {
-        if (! $this->invite && ! $this->tenant) {
+        if ($this->isInvalidInvite()) {
             return __('filament-member::default.page.subheading.invalid_invite');
         }
 
@@ -200,7 +208,7 @@ class AcceptInvite extends SimplePage
             return __('filament-member::default.page.subheading.generic_invite', ['name' => $this->tenant->name]);
         }
 
-        $inviterName = $this->invite->user?->name ?? __('filament-member::default.message.someone');
+        $inviterName = optional($this->invite->user)->name ?? __('filament-member::default.message.someone');
 
         return __('filament-member::default.page.subheading.individual_invite', ['name' => $inviterName]);
     }
@@ -258,7 +266,7 @@ class AcceptInvite extends SimplePage
             'email_verified_at' => now(),
         ]);
 
-        Auth::login($user);
+        auth()->login($user);
 
         $this->acceptInvite($user);
     }
@@ -350,14 +358,14 @@ class AcceptInvite extends SimplePage
             ->compact()
             ->schema([
                 Text::make('tenant_info')
-                    ->content(fn (): Factory|View => view('filament-member::filament.pages.partials.invite-info', [
+                    ->content(fn (): View => view('filament-member::filament.pages.invite-info', [
                         'invite' => $this->invite,
                         'tenant' => $this->tenant,
                         'isGenericInvite' => $this->isGenericInvite,
                     ]))
                     ->extraAttributes(['class' => 'w-full']),
             ])
-            ->visible(fn (): bool => ($this->invite || $this->tenant) && ! $this->showRegisterForm);
+            ->visible(fn (): bool => $this->hasValidInvite() && ! $this->showRegisterForm);
     }
 
     protected function getActionsComponent(): Component
@@ -367,7 +375,7 @@ class AcceptInvite extends SimplePage
             $this->registerAction(),
         ])
             ->fullWidth()
-            ->visible(fn (): bool => ($this->invite || $this->tenant) && ! $this->showRegisterForm);
+            ->visible(fn (): bool => $this->hasValidInvite() && ! $this->showRegisterForm);
     }
 
     protected function getRegisterFormComponent(): Component
@@ -381,7 +389,7 @@ class AcceptInvite extends SimplePage
                 ])
                     ->fullWidth(),
             ])
-            ->visible(fn (): bool => ($this->invite || $this->tenant) && $this->showRegisterForm);
+            ->visible(fn (): bool => $this->hasValidInvite() && $this->showRegisterForm);
     }
 
     protected function getInvalidInviteComponent(): Component
@@ -390,6 +398,6 @@ class AcceptInvite extends SimplePage
             $this->goToLoginAction(),
         ])
             ->fullWidth()
-            ->visible(fn (): bool => ! $this->invite && ! $this->tenant);
+            ->visible(fn (): bool => $this->isInvalidInvite());
     }
 }

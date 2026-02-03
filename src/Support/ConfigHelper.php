@@ -11,12 +11,14 @@ use AlessandroNuunes\FilamentMember\Models\TenantInvite;
 
 class ConfigHelper
 {
+    private const CONFIG_KEY = 'filament-member';
+
     /**
      * Get a configuration value with optional default.
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        return config('filament-member.' . $key, $default);
+        return config(self::CONFIG_KEY.'.'.$key, $default);
     }
 
     /**
@@ -56,7 +58,7 @@ class ConfigHelper
      */
     public static function getTable(string $table): string
     {
-        return self::get('tables.' . $table, $table);
+        return (string) self::get('tables.' . $table, $table);
     }
 
     /**
@@ -64,7 +66,24 @@ class ConfigHelper
      */
     public static function getRelationshipColumn(string $column): string
     {
-        return self::get('relationships.' . $column, $column);
+        return (string) self::get('relationships.' . $column, $column);
+    }
+
+    /**
+     * Get the tenant foreign key column name (pivot and queries).
+     * Use 'tenant_id' or 'reseller_id' when using Reseller as tenant.
+     */
+    public static function getTenantForeignKeyColumn(): string
+    {
+        return (string) self::get('relationships.tenant_foreign_key', 'tenant_id');
+    }
+
+    /**
+     * Get a tenancy configuration.
+     */
+    public static function getTenancyConfig(string $key, mixed $default = null): mixed
+    {
+        return self::get('tenancy.' . $key, $default);
     }
 
     /**
@@ -80,7 +99,7 @@ class ConfigHelper
      */
     public static function getView(string $type, string $view): string
     {
-        return self::get(sprintf('views.%s.%s', $type, $view));
+        return (string) self::get(sprintf('views.%s.%s', $type, $view));
     }
 
     /**
@@ -89,14 +108,6 @@ class ConfigHelper
     public static function getInviteConfig(string $key, mixed $default = null): mixed
     {
         return self::get('invites.' . $key, $default);
-    }
-
-    /**
-     * Get a permission configuration.
-     */
-    public static function getPermissionConfig(string $key, mixed $default = null): mixed
-    {
-        return self::get('permissions.' . $key, $default);
     }
 
     /**

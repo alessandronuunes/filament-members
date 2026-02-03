@@ -9,7 +9,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'navigation.group' => 'Plugin',
+    'navigation.group' => '',
     'navigation.label' => 'Membros',
 
     /*
@@ -25,6 +25,24 @@ return [
     'page.subheading.invalid_invite' => 'Este convite não existe, já foi aceito ou expirou.',
     'page.subheading.generic_invite' => 'Você foi convidado para se juntar à organização :name',
     'page.subheading.individual_invite' => ':name convidou você para se juntar à organização',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant Registration
+    |--------------------------------------------------------------------------
+    */
+
+    'tenant_registration.label' => 'Registrar organização',
+    'tenant_registration.slug' => 'Slug da URL',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant Profile (Edit)
+    |--------------------------------------------------------------------------
+    */
+
+    'tenant_profile.label' => 'Perfil da organização',
+    'tenant_profile.notification_saved' => 'Perfil da organização salvo.',
 
     /*
     |--------------------------------------------------------------------------

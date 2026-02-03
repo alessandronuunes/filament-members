@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember;
 
+use AlessandroNuunes\FilamentMember\Pages\EditTenant;
+use AlessandroNuunes\FilamentMember\Pages\RegisterTenant;
 use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 
 class MemberPlugin implements Plugin
@@ -18,16 +21,28 @@ class MemberPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        $tenantModel = ConfigHelper::getTenantModel();
+        $slugAttribute = ConfigHelper::getTenancyConfig('slug_attribute', 'slug');
+        $ownershipRelationship = ConfigHelper::getTenancyConfig('ownership_relationship', 'user');
+        $tenantRoutePrefix = ConfigHelper::getTenancyConfig('route_prefix');
+
+        $panel->tenant($tenantModel, $slugAttribute, $ownershipRelationship);
+        $panel->tenantRegistration(RegisterTenant::class);
+        $panel->tenantProfile(EditTenant::class);
+
+        if (filled($tenantRoutePrefix)) {
+            $panel->tenantRoutePrefix($tenantRoutePrefix);
+        }
+
         $tenantMembersPage = ConfigHelper::getView('pages', 'tenant_members');
         $acceptInvitePage = ConfigHelper::getView('pages', 'accept_invite');
 
-        $panel->pages([
-            $tenantMembersPage,
-        ])
+        $panel
+            ->pages([$tenantMembersPage])
             ->routes(function () use ($acceptInvitePage): void {
                 $path = ConfigHelper::getRoute('invite_accept_path');
                 $name = ConfigHelper::getRoute('invite_accept_name');
-                $middleware = ConfigHelper::getRoute('invite_accept_middleware');
+                $middleware = Arr::wrap(ConfigHelper::getRoute('invite_accept_middleware'));
 
                 Route::get($path, $acceptInvitePage)
                     ->middleware($middleware)

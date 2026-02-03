@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Livewire;
 
+use BackedEnum;
 use AlessandroNuunes\FilamentMember\Events\TenantInviteCreated;
 use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
 use Filament\Actions\Action;
@@ -18,6 +19,34 @@ use Illuminate\Contracts\View\View;
 
 class ListInvitations extends TableComponent
 {
+    protected function formatRoleState(mixed $state): string
+    {
+        if (blank($state)) {
+            return '-';
+        }
+
+        $enumClass = ConfigHelper::getTenantRoleEnum();
+        if (! enum_exists($enumClass) || ! $state instanceof $enumClass) {
+            return $state instanceof BackedEnum ? $state->value : (string) $state;
+        }
+
+        return method_exists($state, 'getLabel') ? $state->getLabel() : $state->value;
+    }
+
+    protected function getRoleColor(mixed $state): string
+    {
+        if (blank($state)) {
+            return 'gray';
+        }
+
+        $enumClass = ConfigHelper::getTenantRoleEnum();
+        if (! enum_exists($enumClass) || ! $state instanceof $enumClass) {
+            return 'gray';
+        }
+
+        return method_exists($state, 'getColor') ? $state->getColor() : 'gray';
+    }
+
     public function table(Table $table): Table
     {
         $tenant = Filament::getTenant();
@@ -26,7 +55,7 @@ class ListInvitations extends TableComponent
         return $table
             ->query(
                 $inviteModel::query()
-                    ->where('tenant_id', $tenant?->id)
+                    ->where('tenant_id', $tenant?->getKey())
                     ->whereNull('accepted_at')
                     ->where('expires_at', '>', now())
             )
@@ -38,22 +67,8 @@ class ListInvitations extends TableComponent
                 TextColumn::make('role')
                     ->label(__('filament-member::default.column.role'))
                     ->badge()
-                    ->formatStateUsing(function ($state) {
-                        $enumClass = ConfigHelper::getTenantRoleEnum();
-                        if (! enum_exists($enumClass) || ! $state instanceof $enumClass) {
-                            return $state?->value ?? $state ?? '-';
-                        }
-
-                        return method_exists($state, 'getLabel') ? $state->getLabel() : $state->value;
-                    })
-                    ->color(function ($state) {
-                        $enumClass = ConfigHelper::getTenantRoleEnum();
-                        if (! enum_exists($enumClass) || ! $state instanceof $enumClass) {
-                            return 'gray';
-                        }
-
-                        return method_exists($state, 'getColor') ? $state->getColor() : 'gray';
-                    }),
+                    ->formatStateUsing(fn (mixed $state): string => $this->formatRoleState($state))
+                    ->color(fn (mixed $state): string => $this->getRoleColor($state)),
                 TextColumn::make('user.name')
                     ->label(__('filament-member::default.column.invited_by'))
                     ->placeholder('-'),
@@ -90,6 +105,6 @@ class ListInvitations extends TableComponent
 
     public function render(): View
     {
-        return view('filament-member::livewire.list-invitations');
+        return view('filament-member::livewire.tenant.list-invitations');
     }
 }

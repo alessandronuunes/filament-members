@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Listeners;
 
+use BackedEnum;
 use AlessandroNuunes\FilamentMember\Models\TenantInvite;
+use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Auth\Events\Login;
@@ -15,7 +17,7 @@ class AcceptPendingInviteAfterLogin
     {
         $token = session('invite_token');
 
-        if (! $token) {
+        if (blank($token)) {
             return;
         }
 
@@ -26,7 +28,7 @@ class AcceptPendingInviteAfterLogin
             ->where('expires_at', '>', now())
             ->first();
 
-        if (! $invite) {
+        if (blank($invite)) {
             session()->forget('invite_token');
 
             return;
@@ -46,8 +48,11 @@ class AcceptPendingInviteAfterLogin
             return;
         }
 
+        $roleColumn = ConfigHelper::getRelationshipColumn('tenant_user_role_column');
+        $roleValue = $invite->role instanceof BackedEnum ? $invite->role->value : $invite->role;
+
         $invite->tenant->users()->syncWithoutDetaching([
-            $user->id => ['role' => $invite->role],
+            $user->getKey() => [$roleColumn => $roleValue],
         ]);
 
         $invite->update(['accepted_at' => now()]);

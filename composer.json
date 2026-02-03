@@ -1,23 +1,63 @@
 {
     "name": "alessandronuunes/filament-member",
+    "description": "A comprehensive Filament plugin for managing tenant members, invitations, and role-based access control in multi-tenant applications.",
+    "keywords": [
+        "filament",
+        "filament-plugin",
+        "laravel",
+        "multi-tenancy",
+        "members",
+        "invitations",
+        "rbac"
+    ],
+    "homepage": "https://github.com/alessandronuunes/filament-member",
     "type": "library",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/alessandronuunes/filament-member/issues",
+        "source": "https://github.com/alessandronuunes/filament-member"
+    },
+    "authors": [
+        {
+            "name": "Alessandro Nuunes",
+            "email": "alessandronuunes@gmail.com",
+            "homepage": "https://github.com/alessandronuunes"
+        }
+    ],
+    "require": {
+        "php": "^8.2|^8.3|^8.4",
+        "spatie/laravel-package-tools": "^1.16",
+        "filament/filament": "^4.0|^5.0",
+        "illuminate/contracts": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "rector/rector": "^2.0"
+    },
     "autoload": {
         "psr-4": {
             "AlessandroNuunes\\FilamentMember\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "alessandronuunes",
-            "email": "alessandronuunes@gmail.com"
+    "autoload-dev": {
+        "psr-4": {
+            "AlessandroNuunes\\FilamentMember\\Tests\\": "tests/"
         }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": "^8.3",
-        "spatie/laravel-package-tools": "^1.16",
-        "filament/filament": "^4.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "laravel": {
@@ -26,8 +66,6 @@
             ]
         }
     },
-    "require-dev": {
-        "driftingly/rector-laravel": "dev-main",
-        "laravel/pint": "dev-main"
-    }
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

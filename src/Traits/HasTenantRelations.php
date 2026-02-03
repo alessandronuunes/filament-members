@@ -57,9 +57,10 @@ trait HasTenantRelations
     {
         $tenantModel = ConfigHelper::getTenantModel();
         $pivotTable = ConfigHelper::getTable('tenant_user');
+        $tenantFkColumn = ConfigHelper::getTenantForeignKeyColumn();
         $roleColumn = ConfigHelper::getRelationshipColumn('tenant_user_role_column');
 
-        return $this->belongsToMany($tenantModel, $pivotTable)
+        return $this->belongsToMany($tenantModel, $pivotTable, 'user_id', $tenantFkColumn)
             ->withPivot($roleColumn);
     }
 }

@@ -18,12 +18,11 @@ class SendTenantInviteNotification
     {
         $invite = $event->invite;
 
-        $userModel = ConfigHelper::getUserModel();
-        $existingUser = $userModel::query()
-            ->whereEmail($invite->email)
+        $existingUser = ConfigHelper::getUserModel()::query()
+            ->where('email', $invite->email)
             ->first();
 
-        if ($existingUser) {
+        if (filled($existingUser)) {
             $inviterName = $invite->user?->name ?? __('filament-member::default.message.someone');
             $tenantName = $invite->tenant?->name ?? __('filament-member::default.message.organization_name');
 
@@ -36,7 +35,7 @@ class SendTenantInviteNotification
                     Action::make('join')
                         ->label(__('filament-member::default.action.accept_invite_button'))
                         ->button()
-                        ->url(URL::signedRoute('filament.admin.' . $routeName, ['token' => $invite->token]))
+                        ->url(URL::signedRoute('filament.admin.'.$routeName, ['token' => $invite->token]))
                         ->markAsRead(),
                 ])
                 ->sendToDatabase($existingUser);

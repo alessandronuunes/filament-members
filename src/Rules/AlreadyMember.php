@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AlessandroNuunes\FilamentMember\Rules;
 
-use Closure;
 use AlessandroNuunes\FilamentMember\Support\ConfigHelper;
+use Closure;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -15,20 +15,18 @@ class AlreadyMember implements ValidationRule
     {
         $tenant = Filament::getTenant();
 
-        if (! $tenant) {
+        if (blank($tenant)) {
             return;
         }
 
         $userModel = ConfigHelper::getUserModel();
         $user = $userModel::where('email', $value)->first();
 
-        if (! $user) {
+        if (blank($user)) {
             return;
         }
 
-        $isMember = $tenant->users()
-            ->where('users.id', $user->id)
-            ->exists();
+        $isMember = $tenant->users()->whereKey($user->getKey())->exists();
 
         if ($isMember) {
             $fail(__('filament-member::default.validation.already_member'));
