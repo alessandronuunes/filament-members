@@ -47,13 +47,47 @@ class TenantMembers extends Page
     #[Override]
     public static function getNavigationGroup(): ?string
     {
+        $configGroup = ConfigHelper::getNavigationConfig('tenant_members_page', 'group');
+
+        if ($configGroup !== null && $configGroup !== '') {
+            return $configGroup;
+        }
+
         return __('filament-member::default.navigation.group');
     }
 
     #[Override]
     public static function getNavigationLabel(): string
     {
+        $configLabel = ConfigHelper::getNavigationConfig('tenant_members_page', 'label');
+
+        if ($configLabel !== null && $configLabel !== '') {
+            return $configLabel;
+        }
+
         return __('filament-member::default.navigation.label');
+    }
+
+    #[Override]
+    public static function getNavigationIcon(): ?string
+    {
+        $configIcon = ConfigHelper::getNavigationConfig('tenant_members_page', 'icon');
+
+        if ($configIcon !== null && $configIcon !== '') {
+            return $configIcon;
+        }
+
+        return static::$navigationIcon instanceof BackedEnum
+            ? static::$navigationIcon->value
+            : static::$navigationIcon;
+    }
+
+    #[Override]
+    public static function getNavigationSort(): ?int
+    {
+        $configSort = ConfigHelper::getNavigationConfig('tenant_members_page', 'sort');
+
+        return is_numeric($configSort) ? (int) $configSort : static::$navigationSort;
     }
 
     #[Override]

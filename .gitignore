@@ -10,3 +10,4 @@
 .env.backup
 composer.lock
 /vendor
+.php-cs-fixer*

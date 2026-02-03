@@ -127,4 +127,17 @@ return [
         'email_unique_in_tenant' => true,
         'require_role_on_invite' => true,
     ],
+
+    // ============================================
+    // CONFIGURAÇÕES DE NAVEGAÇÃO DO FILAMENT
+    // ============================================
+    // Personalize grupo, ordem, ícone e label da página de membros no menu
+    'navigation' => [
+        'tenant_members_page' => [
+            'group' => null, // null = usa __('filament-member::default.navigation.group')
+            'sort' => 2,
+            'icon' => 'heroicon-o-users',
+            'label' => null, // null = usa __('filament-member::default.navigation.label')
+        ],
+    ],
 ];

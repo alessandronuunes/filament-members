@@ -6,8 +6,8 @@ namespace AlessandroNuunes\FilamentMember\Support;
 
 use App\Models\User;
 use AlessandroNuunes\FilamentMember\Models\Tenant;
-use AlessandroNuunes\FilamentMember\Models\TenantInvite;
 use AlessandroNuunes\FilamentMember\Enums\TenantRole;
+use AlessandroNuunes\FilamentMember\Models\TenantInvite;
 
 class ConfigHelper
 {
@@ -129,5 +129,13 @@ class ConfigHelper
     public static function getValidationConfig(string $key, mixed $default = null): mixed
     {
         return self::get('validation.' . $key, $default);
+    }
+
+    /**
+     * Get a navigation configuration value.
+     */
+    public static function getNavigationConfig(string $pageKey, string $key, mixed $default = null): mixed
+    {
+        return self::get("navigation.{$pageKey}.{$key}", $default);
     }
 }
